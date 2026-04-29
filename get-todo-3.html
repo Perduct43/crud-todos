@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="background-color: rgb(235, 230, 230); display: flex; justify-content: center; ">
+    <div style="background-color: white; border-radius: 8px; width: 700px; height: auto; padding: 20px; box-shadow: 5px 5px 5px 5px grey;">
+        <h1 style="display: flex; justify-content: center;">Todo Explorer</h1>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <button onclick="cleardisplay()"
+                style="width: 480px; height: 40px; border: none; color: white; background-color: grey; border-radius: 8px;">Clear</button>
+            <button onclick="getall()"
+                style="width: 480px; height: 40px; border: none; color: white; background-color: rgb(76, 76, 255); border-radius: 8px;">Load
+                All Todos</button>
+        </div>
+        <div id="display">
+        </div>
+    </div>
+</body>
+<script>
+    const display = document.getElementById("display");
+    async function getall() {
+        try {
+            const theapi = await fetch("https://dummyjson.com/todos");
+            const thejson = await theapi.json();
+            console.log("this is the json", thejson)
+            display.innerHTML = thejson.todos.map((item)=>(`
+            <div onclick = "getbyid(${item.id})">
+                <p><strong>#${item.id}</strong>:${item.todo}</p>
+            </div>
+            `)).join("")
+        } catch (error) {
+            console.log("this is the error",error)
+        }
+    }
+
+
+    async function getbyid(id) {
+        try {
+            const request = await fetch(`https://dummyjson.com/todos/${id}`)
+            const response = await request.json() 
+            console.log("this is the response", response)
+            display.innerHTML =`
+            <h2>Details View</h2>
+            <p>${response.todo}</p>
+            <p>Status:${response.completed}</p>
+            <button onclick="getall()"> ← Back to list </button>
+            `
+        } catch (error) {
+            
+        }
+    }
+
+    function cleardisplay() {
+        display.innerHTML =``
+    }
+</script>
+
+</html>
