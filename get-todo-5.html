@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="background-color: rgb(195, 189, 189);">
+    <div style="display: flex; justify-content: center;">
+        <div
+            style="box-shadow: 5px 5px 5px 5px grey; width: 800px; height: auto; padding: 20px; gap: 20px; border-radius: 8px; background-color: white;">
+            <h1 style="display: flex; justify-content: center;">User Explorer</h1>
+            <input oninput="users()" style="display: flex; justify-content: center; width: 800px; height: 30px;" type="text" id="search"><br>
+            <div style="display: flex; gap: 80px; margin-bottom: 20px;">
+                <button onclick="clearbutton()"
+                    style="border: none; background-color: grey; color: white; width: 350px; height: 45px; border-radius: 8px;">Clear</button>
+                <button onclick="users()"
+                    style="border: none; background-color: blue; color: white; width: 350px; height: 45px; border-radius: 8px;">Load
+                    all Users</button>
+            </div>
+            <div id="display">
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const display = document.getElementById("display");
+    console.log("search", search)
+    async function users() {
+        try {
+        const search = document.getElementById("search").value;
+        const theapi = await fetch(`https://dummyjson.com/users/search?q=${search}`);
+        const thejson = await theapi.json();
+        display.innerHTML = thejson.users.map((user)=>(`
+        <div onclick="onclickbutton(${user.id})" style="border: none; box-shadow: 5px 5px 5px 5px grey; border-radius: 8px; width: 750px; height: 400px; padding: 20px; gap: 20px;">
+                    <img src="${user.image}" alt="">
+                    <p><strong>Name</strong>:${user.firstName} ${user.lastName} ${user.maidenName}</p>
+                    <p><strong>Dob</strong>:${user.birthDate}</p>
+                    <p><strong>Expires on</strong>:${user.bank.cardExpire}</p>
+                    <p><strong>${user.phone}</strong></p>
+                    <p>${user.age}</p>
+                    <p>${user.gender}</p>
+                    <p>${user.email}</p>
+                </div>
+        `)).join("");
+        } catch (error) {
+            console.log("this is the error",error)
+        }
+    }
+
+
+    function clearbutton() {
+        display.innerHTML = `
+        `
+    }
+
+
+    async function onclickbutton(id) {
+        const request  = await fetch(`https://dummyjson.com/users/${id}`)
+        const response = await request.json();
+
+        display.innerHTML = `
+        <div style="box-shadow: 5px 5px 5px 5px grey; width: 750px; height: auto; padding: 20px; gap: 20px; border-radius: 8px; background-color: white;">
+            <div style="display: flex;">
+                    <img src="${response.image}" alt="">
+                <div>
+                    <p>${response.firstName} ${response.lastName} ${response.maidenName}</p>
+                    <p>${response.email}</p>
+                </div>
+            </div>
+            <hr>
+            <h2>${response.firstName} ${response.lastName} ${response.maidenName}</h2>
+            <h2>${response.email}</h2>
+            <h2>${response.phone}</h2>
+            <h2>${response.address.address}</h2>
+        </div>
+        `
+    }
+</script>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="background-color: rgb(235, 230, 230); display: flex; justify-content: center; padding: 20px;">
+    <div style="background-color: white; border-radius: 8px; width: 700px; min-height: 200px; padding: 20px; box-shadow: 5px 5px 5px 5px grey;">
+        <h1 style="display: flex; justify-content: center;">Product Explorer</h1>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+            <button onclick="cleardisplay()"
+                style="width: 480px; height: 40px; border: none; color: white; background-color: grey; border-radius: 8px; cursor: pointer;">Clear</button>
+            <button onclick="getall()"
+                style="width: 480px; height: 40px; border: none; color: white; background-color: rgb(76, 76, 255); border-radius: 8px; cursor: pointer;">Load
+                All Products</button>
+        </div>
+        <div id="display" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        </div>
+    </div>
+</body>
+<script>
+    const display = document.getElementById("display");
+
+    async function getall() {
+        try {
+            const theapi = await fetch("https://dummyjson.com/products");
+            const thejson = await theapi.json();
+            const products = thejson.products;
+
+            display.innerHTML = products.map((item) => (`
+                <div style="width: 280px; border-radius: 12px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); padding: 20px; background-color: white; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <img src="${item.thumbnail}" alt="${item.title}" style="width: 100%; height: 150px; object-fit: contain;">
+                    <h2 style="color: grey; font-size: 14px; margin-top: 10px;">${item.category.toUpperCase()}</h2>
+                    <h1 style="font-size: 18px; margin: 10px 0; min-height: 44px;">${item.title}</h1>
+                    <h2 style="color: green">$${item.price}</h2>
+                    <p>⭐ ${item.rating}/5</p>
+                    <button onclick="getbyid(${item.id})" style="background-color: rgb(67, 114, 235); border: none; width: 100%; height: 40px; border-radius: 8px; color: white; cursor: pointer; margin-top: 10px;">
+                        View Details
+                    </button>
+                </div>
+            `)).join("");
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function getbyid(id) {
+        try {
+            const request = await fetch(`https://dummyjson.com/products/${id}`);
+            const response = await request.json();
+            
+            display.innerHTML = `
+                <div style="width: 100%; padding: 20px; text-align: center;">
+                    <h2>Details View</h2>
+                    <img src="${response.thumbnail}" style="width: 200px;">
+                    <h1>${response.title}</h1>
+                    <p>${response.description}</p>
+                    <p><strong>Price:</strong> $${response.price}</p>
+                    <p><strong>Stock:</strong> ${response.stock}</p>
+                    <button onclick="getall()" style="padding: 10px 20px; cursor: pointer; border-radius: 8px; border: 1px solid grey; background: white;"> ← Back to list </button>
+                </div>
+            `;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function cleardisplay() {
+        display.innerHTML = ``;
+    }
+</script>
+
+</html>
